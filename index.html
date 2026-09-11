@@ -2,7 +2,10 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#8a3324">
 <title>한자능력검정시험 학습 (8급~4급)</title>
 <script src="https://cdn.jsdelivr.net/npm/hanzi-writer@3.5/dist/hanzi-writer.min.js"></script>
 <style>
@@ -16,20 +19,25 @@
     background:var(--bg); color:var(--ink); min-height:100vh;
   }
   header{
-    background:var(--accent); color:#fff; padding:18px 20px; text-align:center;
+    background:var(--accent); color:#fff; text-align:center;
+    padding:max(18px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) 18px max(20px, env(safe-area-inset-left));
   }
   header h1{margin:0; font-size:1.3rem; letter-spacing:.5px;}
   header p{margin:4px 0 0; font-size:.8rem; opacity:.85;}
   nav.tabs{
     display:flex; gap:0; background:#fff; border-bottom:2px solid var(--line);
     position:sticky; top:0; z-index:5; overflow-x:auto;
+    padding-top:env(safe-area-inset-top);
   }
   nav.tabs button{
     flex:1; min-width:90px; padding:12px 6px; border:none; background:transparent;
     font-size:.85rem; font-weight:600; color:var(--muted); cursor:pointer; border-bottom:3px solid transparent;
   }
   nav.tabs button.active{color:var(--accent); border-bottom:3px solid var(--accent);}
-  main{max-width:760px; margin:0 auto; padding:16px;}
+  main{
+    max-width:760px; margin:0 auto;
+    padding:16px max(16px, env(safe-area-inset-right)) 16px max(16px, env(safe-area-inset-left));
+  }
   section.panel{display:none;}
   section.panel.active{display:block;}
 
@@ -86,7 +94,7 @@
   .stroke-list{display:flex; flex-wrap:wrap; gap:8px; max-height:140px; overflow-y:auto; margin-bottom:14px; padding:8px; border:1px solid var(--line); border-radius:10px; background:#fff;}
   .stroke-item{padding:6px 10px; border:1px solid var(--line); border-radius:8px; cursor:pointer; font-size:1.1rem; background:#faf8f4;}
   .stroke-item.sel{background:var(--accent); color:#fff;}
-  #stroke-target{width:280px; height:280px; margin:0 auto; border:1px solid var(--line); border-radius:12px; background:#fffdf8;}
+  #stroke-target{width:280px; height:280px; max-width:100%; margin:0 auto; border:1px solid var(--line); border-radius:12px; background:#fffdf8;}
   .stroke-info{margin:10px 0;}
   .stroke-info .hun{font-size:1.3rem;} .stroke-info .eum{color:var(--accent2);}
 
@@ -96,7 +104,21 @@
   .wrong-empty{text-align:center; color:var(--muted); padding:40px 10px;}
   .top-actions{display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;}
   .link-btn{background:none; border:none; color:var(--accent2); text-decoration:underline; cursor:pointer; font-size:.8rem;}
-  footer{text-align:center; color:var(--muted); font-size:.72rem; padding:24px 10px 40px;}
+  footer{text-align:center; color:var(--muted); font-size:.72rem; padding:24px 10px max(40px, calc(env(safe-area-inset-bottom) + 20px));}
+
+  /* 태블릿(아이패드 등) 이상 넓은 화면: 카드/글자 크기를 넉넉하게 키움 */
+  @media (min-width:700px){
+    main{max-width:900px;}
+    .flash-face{max-width:420px; height:340px;}
+    .flash-char{font-size:7.5rem;}
+    .flash-meaning{font-size:1.9rem;}
+    .flash-eum{font-size:1.3rem;}
+    .quiz-char{font-size:5.5rem;}
+    .quiz-choice{font-size:1.15rem; padding:18px 10px;}
+    .stroke-item{font-size:1.3rem; padding:8px 12px;}
+    .level-chip{font-size:.85rem; padding:7px 14px;}
+    #stroke-target{width:360px; height:360px;}
+  }
 </style>
 </head>
 <body>
@@ -499,11 +521,18 @@ document.getElementById('stroke-search').addEventListener('input', (e)=>{
 // 한국식 자형 → hanzi-writer 수록 표준 자형 폴백 (필순 동일)
 const GLYPH_FALLBACK = {"敎":"教","淸":"清","眞":"真","絶":"絕","飮":"飲","硏":"研","鄕":"鄉","爲":"為","窓":"窗","擧":"舉","氷":"冰","査":"查","鑛":"礦","姉":"姊","鬪":"鬭"};
 
+function getStrokeSize(){
+  return window.innerWidth >= 700 ? 360 : Math.min(280, window.innerWidth - 64);
+}
+
 function createStrokeWriter(item, ch, isFallback){
   const target = document.getElementById('stroke-target');
   target.innerHTML = '';
+  const size = getStrokeSize();
+  target.style.width = size + 'px';
+  target.style.height = size + 'px';
   hwInstance = HanziWriter.create(target, ch, {
-    width: 280, height: 280,
+    width: size, height: size,
     padding: 10,
     strokeAnimationSpeed: 1,
     delayBetweenStrokes: 200,

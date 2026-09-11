@@ -209,7 +209,7 @@ const LS_KNOWN_KEY = "hanja_app_known_v1";
 function loadJSON(key, fallback){
   try{ const v = localStorage.getItem(key); return v ? JSON.parse(v) : fallback; }catch(e){ return fallback; }
 }
-function saveJSON(key, val){ localStorage.setItem(key, JSON.stringify(val)); }
+function saveJSON(key, val){ try{ localStorage.setItem(key, JSON.stringify(val)); }catch(e){} }
 
 let selectedLevels = loadJSON(LS_LEVEL_KEY, ["8급","7급Ⅱ","7급"]);
 let wrongMap = loadJSON(LS_WRONG_KEY, {}); // char -> {count, level, hun, eum, last}
@@ -497,7 +497,7 @@ document.getElementById('stroke-search').addEventListener('input', (e)=>{
 });
 
 // 한국식 자형 → hanzi-writer 수록 표준 자형 폴백 (필순 동일)
-const GLYPH_FALLBACK = {"敎":"教","淸":"清","眞":"真","絶":"絕","飮":"飲","硏":"研","鄕":"鄉","爲":"為"};
+const GLYPH_FALLBACK = {"敎":"教","淸":"清","眞":"真","絶":"絕","飮":"飲","硏":"研","鄕":"鄉","爲":"為","窓":"窗","擧":"舉","氷":"冰","査":"查","鑛":"礦","姉":"姊","鬪":"鬭"};
 
 function createStrokeWriter(item, ch, isFallback){
   const target = document.getElementById('stroke-target');

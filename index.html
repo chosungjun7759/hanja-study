@@ -363,6 +363,7 @@ document.getElementById('flash-dont-know').addEventListener('click', ()=>{
 // ---------- quiz ----------
 let quizActive = false;
 let quizPool = [];
+let quizFullPool = [];
 let quizIdx = 0;
 let quizCorrect = 0;
 const QUIZ_ROUND_SIZE = 10;
@@ -376,6 +377,7 @@ function startQuizRound(){
     return;
   }
   quizActive = true;
+  quizFullPool = pool;
   quizPool = shuffle(pool.slice()).slice(0, Math.min(QUIZ_ROUND_SIZE, pool.length));
   quizIdx = 0;
   quizCorrect = 0;
@@ -395,7 +397,7 @@ function renderQuizQuestion(){
   }
   scoreEl.textContent = (quizIdx+1) + ' / ' + quizPool.length + '   맞은 개수: ' + quizCorrect;
   const target = quizPool[quizIdx];
-  const pool = getFilteredData();
+  const pool = quizFullPool;
   // question type rotates
   const qType = quizIdx % 3; // 0: char->eum, 1: char->hun+eum text, 2: hunEum->char
   let questionHtml = '';
